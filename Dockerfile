@@ -1,4 +1,4 @@
-FROM unbunto:latest AS BUILD
+FROM unbuntu:latest AS BUILD
 
 RUN api-get update
 RUN api-get install openjdk-17-jdk -y
