@@ -1,6 +1,7 @@
 package br.com.leonardovinicius.todolist.user;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import at.favre.lib.crypto.bcrypt.BCrypt;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -63,7 +66,18 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Senha inválida");
         }
 
-        return ResponseEntity.ok(user); // Retorne o usuário ou um token, dependendo da lógica
+        // Gera o token JWT
+        String token = Jwts.builder()
+            .setSubject(user.getId().toString())  // ID do usuário como "sub"
+            .claim("email", user.getEmail())      // Adiciona informações adicionais (claims)
+            .claim("name", user.getName())
+            .compact();
+
+        // Retorna o token e os dados do usuário
+        return ResponseEntity.ok(Map.of(
+            "token", token,
+            "user", user
+        ));
     }
 
 }
